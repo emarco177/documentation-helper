@@ -18,6 +18,7 @@ jinja2 = "*"
 uvicorn = "*"
 streamlit = "*"
 streamlit-chat = "*"
+tqdm = "*"
 
 [dev-packages]
 
