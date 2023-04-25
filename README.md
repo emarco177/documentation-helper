@@ -32,6 +32,12 @@ Go to the project directory
   cd documentation-helper
 ```
 
+Download LangChain Documentation
+```bash
+  mkdir langchain-docs
+  wget -r -A.html -P langchain-docs https://langchain.readthedocs.io/en/latest/ 
+```
+
 Install dependencies
 
 ```bash

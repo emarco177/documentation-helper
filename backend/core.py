@@ -11,7 +11,7 @@ pinecone.init(
     environment=os.environ["PINECONE_ENVIRONMENT_REGION"],
 )
 
-INDEX_NAME = "medium-blogs-embeddings-index"
+INDEX_NAME = "langchain-doc-index"
 
 
 def run_llm(query: str):
