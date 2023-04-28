@@ -12,13 +12,13 @@ openai = "*"
 pinecone-client = "*"
 unstructured = "*"
 nltk = "*"
-python-magic-bin = "*"
 fastapi = "*"
 jinja2 = "*"
 uvicorn = "*"
 streamlit = "*"
 streamlit-chat = "*"
 tqdm = "*"
+pexpect = "*"
 
 [dev-packages]
 
