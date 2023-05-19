@@ -35,7 +35,7 @@ Go to the project directory
 Download LangChain Documentation
 ```bash
   mkdir langchain-docs
-  wget -r -A.html -P langchain-docs https://langchain.readthedocs.io/en/latest/ 
+  wget -r -A.html -P langchain-docs https://python.langchain.com/en/latest/index.html
 ```
 
 Install dependencies
