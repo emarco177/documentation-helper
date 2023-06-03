@@ -14,7 +14,7 @@ INDEX_NAME = "langchain-doc-index"
 
 
 def ingest_docs():
-    loader = ReadTheDocsLoader("langchain-docs/langchain.readthedocs.io/en/latest")
+    loader = ReadTheDocsLoader("python.langchain.com/en/latest/index.html")
     raw_documents = loader.load()
     print(f"loaded {len(raw_documents)} documents")
     text_splitter = RecursiveCharacterTextSplitter(
