@@ -16,9 +16,7 @@ pinecone.init(
 
 def run_llm(query: str) -> Any:
     embeddings = OpenAIEmbeddings()
-    docsearch = Pinecone.from_existing_index(
-        INDEX_NAME, embeddings
-    )
+    docsearch = Pinecone.from_existing_index(INDEX_NAME, embeddings)
     chat = ChatOpenAI(verbose=True, temperature=0)
     qa = RetrievalQA.from_chain_type(
         llm=chat,
