@@ -19,6 +19,10 @@ streamlit = "*"
 streamlit-chat = "*"
 tqdm = "*"
 watchdog = "*"
+yt-dlp = "*"
+youtube-dl = "*"
+pydub = "*"
+faiss-cpu = "*"
 
 [dev-packages]
 
