@@ -16,6 +16,9 @@ def create_sources_string(source_urls: Set[str]) -> str:
     return sources_string
 
 
+if "chat_answers_history" not in st.session_state:
+    st.session_state.chat_answers_history = []
+
 st.header("LangChain🦜🔗 Udemy Course- Helper Bot")
 if (
     "chat_answers_history" not in st.session_state
