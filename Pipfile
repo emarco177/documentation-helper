@@ -23,6 +23,7 @@ yt-dlp = "*"
 youtube-dl = "*"
 pydub = "*"
 faiss-cpu = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

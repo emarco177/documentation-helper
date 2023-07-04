@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
@@ -8,11 +9,12 @@ from typing import Any, Dict, List
 
 from consts import INDEX_NAME
 
+load_dotenv()
 pinecone.init(
     api_key=os.environ["PINECONE_API_KEY"],
     environment=os.environ["PINECONE_ENVIRONMENT_REGION"],
 )
-
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []):
     embeddings = OpenAIEmbeddings()
