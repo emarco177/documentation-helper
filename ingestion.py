@@ -29,7 +29,7 @@ def ingest_docs() -> None:
     print(f"Going to insert {len(documents)} to Pinecone")
     embeddings = OpenAIEmbeddings()
     Pinecone.from_documents(
-        documents[3969:], embeddings, index_name="langchain-doc-index"
+        documents, embeddings, index_name="langchain-doc-index"
     )
     print("****** Added to Pinecone vectorstore vectors")
 
