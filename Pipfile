@@ -12,7 +12,7 @@ openai = "*"
 pinecone-client = "*"
 unstructured = "*"
 nltk = "*"
-python-magic-bin = "*"
+#python-magic-bin = "*"
 fastapi = "*"
 jinja2 = "*"
 uvicorn = "*"
@@ -24,4 +24,3 @@ tqdm = "*"
 
 [requires]
 python_version = "3.11"
-python_full_version = "3.11.0"
