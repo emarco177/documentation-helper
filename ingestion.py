@@ -1,37 +1,42 @@
-import os
-from langchain.document_loaders import ReadTheDocsLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import Pinecone
-import pinecone
+from dotenv import load_dotenv
 
-pinecone.init(
-    api_key=os.environ["PINECONE_API_KEY"],
-    environment=os.environ["PINECONE_ENVIRONMENT_REGION"],
+load_dotenv()
+
+import os
+
+from langchain_community.document_loaders import ReadTheDocsLoader
+from langchain_openai import OpenAIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Pinecone as PineconeLangChain
+from pinecone import Pinecone
+
+
+pc = Pinecone(
+    api_key=os.environ.get("PINECONE_API_KEY"),
 )
 
+INDEX_NAME = "langchain-doc-index"
 
-def ingest_docs() -> None:
-    loader = ReadTheDocsLoader(path="langchain-docs/langchain.readthedocs.io/en/latest")
-    raw_documents = loader.load()
-    print(f"loaded {len(raw_documents) }documents")
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, chunk_overlap=100, separators=["\n\n", "\n", " ", ""]
+
+def ingest_docs():
+    loader = ReadTheDocsLoader(
+        "langchain-docs/api.python.langchain.com/en/latest/chains"
     )
-    documents = text_splitter.split_documents(documents=raw_documents)
-    print(f"Splitted into {len(documents)} chunks")
 
+    raw_documents = loader.load()
+    print(f"loaded {len(raw_documents)} documents")
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=50)
+    documents = text_splitter.split_documents(raw_documents)
     for doc in documents:
-        old_path = doc.metadata["source"]
-        new_url = old_path.replace("langchain-docs", "https:/")
+        new_url = doc.metadata["source"]
+        new_url = new_url.replace("langchain-docs", "https:/")
         doc.metadata.update({"source": new_url})
 
-    print(f"Going to insert {len(documents)} to Pinecone")
-    embeddings = OpenAIEmbeddings()
-    Pinecone.from_documents(
-        documents, embeddings, index_name="langchain-doc-index"
-    )
-    print("****** Added to Pinecone vectorstore vectors")
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    print(f"Going to add {len(documents)} to Pinecone")
+    PineconeLangChain.from_documents(documents, embeddings, index_name=INDEX_NAME)
+    print("****Loading to vectorstore done ***")
 
 
 if __name__ == "__main__":
