@@ -18,6 +18,8 @@ uvicorn = "*"
 streamlit = "*"
 streamlit-chat = "*"
 tqdm = "*"
+langchain-pinecone = "*"
+langchain-openai = "*"
 
 [dev-packages]
 
