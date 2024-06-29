@@ -1,8 +1,12 @@
+from dotenv import load_dotenv
+
+load_dotenv()
 from typing import Set
 
-from backend.core import run_llm
 import streamlit as st
 from streamlit_chat import message
+
+from backend.core import run_llm
 
 
 def create_sources_string(source_urls: Set[str]) -> str:
@@ -37,16 +41,17 @@ if prompt:
             query=prompt, chat_history=st.session_state["chat_history"]
         )
 
-        sources = set(
-            [doc.metadata["source"] for doc in generated_response["source_documents"]]
-        )
+        sources = set(doc.metadata["source"] for doc in generated_response["context"])
+
         formatted_response = (
             f"{generated_response['answer']} \n\n {create_sources_string(sources)}"
         )
 
-        st.session_state.chat_history.append((prompt, generated_response["answer"]))
-        st.session_state.user_prompt_history.append(prompt)
-        st.session_state.chat_answers_history.append(formatted_response)
+        st.session_state["user_prompt_history"].append(prompt)
+        st.session_state["chat_answers_history"].append(formatted_response)
+        st.session_state["chat_history"].append(("human", prompt))
+        st.session_state["chat_history"].append(("ai", generated_response["answer"]))
+
 
 if st.session_state["chat_answers_history"]:
     for generated_response, user_query in zip(
