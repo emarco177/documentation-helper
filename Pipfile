@@ -23,6 +23,8 @@ langchain-openai = "*"
 langchain-community = "*"
 isort = "*"
 langchainhub = "*"
+httpx = "*"
+langchain-huggingface = "*"
 
 [dev-packages]
 
