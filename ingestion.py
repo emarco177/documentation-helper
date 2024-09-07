@@ -53,15 +53,13 @@ def ingest_docs2() -> None:
         "https://python.langchain.com/v0.2/docs/concepts/",
     ]
     langchain_documents_base_urls2 = [langchain_documents_base_urls[0]]
-    for url in langchain_documents_base_urls:
+    for url in langchain_documents_base_urls2:
         print(f"FireCrawling {url=}")
         loader = FireCrawlLoader(
             url=url,
             mode="crawl",
             params={
-                "crawlerOptions": {"limit": 5},
-                "pageOptions": {"onlyMainContent": True},
-                "wait_until_done": True,
+                "limit": 5,
             },
         )
         docs = loader.load()
