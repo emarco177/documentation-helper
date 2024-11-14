@@ -7,16 +7,18 @@ import streamlit as st
 from streamlit_chat import message
 
 from backend.core import run_llm
+
 st.set_page_config(
     page_title="Your App Title",
     page_icon="🧊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 # Add these imports
 from PIL import Image
 import requests
 from io import BytesIO
+
 
 def create_sources_string(source_urls: Set[str]) -> str:
     if not source_urls:
@@ -28,6 +30,7 @@ def create_sources_string(source_urls: Set[str]) -> str:
         sources_string += f"{i+1}. {source}\n"
     return sources_string
 
+
 # Add this function to get a profile picture
 def get_profile_picture(email):
     # This uses Gravatar to get a profile picture based on email
@@ -37,8 +40,10 @@ def get_profile_picture(email):
     img = Image.open(BytesIO(response.content))
     return img
 
+
 # Custom CSS for dark theme and modern look
-st.markdown("""
+st.markdown(
+    """
 <style>
     .stApp {
         background-color: #1E1E1E;
@@ -59,7 +64,9 @@ st.markdown("""
         background-color: #2D2D2D;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Set page config at the very beginning
 
@@ -67,7 +74,7 @@ st.markdown("""
 # Sidebar user information
 with st.sidebar:
     st.title("User Profile")
-    
+
     # You can replace these with actual user data
     user_name = "John Doe"
     user_email = "john.doe@example.com"
