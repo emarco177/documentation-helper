@@ -16,7 +16,7 @@ from consts import INDEX_NAME
 embeddings = OllamaEmbeddings(model="llama3.1")
 
 def ingest_docs():
-    loader = ReadTheDocsLoader("langchain-docs/api.python.langchain.com/en/latest")
+    loader = ReadTheDocsLoader("https://python.langchain.com/docs/integrations/text_embedding/")
 
     raw_documents = loader.load()
     print(f"loaded {len(raw_documents)} documents")
