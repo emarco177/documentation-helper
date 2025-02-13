@@ -66,7 +66,8 @@ def run_llm2(query: str, chat_history: List[Dict[str, Any]] = []):
 
     rag_chain = (
         {
-            "context": docsearch.as_retriever() | format_docs,
+            # "context": docsearch.as_retriever() | format_docs,
+            "context": None,
             "input": RunnablePassthrough(),
         }
         | retrieval_qa_chat_prompt
@@ -74,7 +75,7 @@ def run_llm2(query: str, chat_history: List[Dict[str, Any]] = []):
         | StrOutputParser()
     )
 
-    retrieve_docs_chain = (lambda x: x["input"]) | docsearch.as_retriever()
+    retrieve_docs_chain = (lambda x: x["input"]) | docsearch.as_retriever() | format_docs
 
     qa = RunnablePassthrough.assign(
         context=retrieve_docs_chain
