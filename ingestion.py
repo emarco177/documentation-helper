@@ -6,13 +6,14 @@ load_dotenv()
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import ReadTheDocsLoader
-from langchain_openai import OpenAIEmbeddings
+# from langchain_openai import OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
 from consts import INDEX_NAME
 
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-
+# embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = OllamaEmbeddings(model="llama3.1")
 
 def ingest_docs():
     loader = ReadTheDocsLoader("langchain-docs/api.python.langchain.com/en/latest")
@@ -54,7 +55,8 @@ def ingest_docs2() -> None:
     ]
 
     langchain_documents_base_urls2 = [
-        "https://python.langchain.com/docs/integrations/chat/"
+        "https://python.langchain.com/docs/integrations/chat/",
+        "https://python.langchain.com/docs/integrations/text_embedding/",
     ]
     for url in langchain_documents_base_urls2:
         print(f"FireCrawling {url=}")
