@@ -22,14 +22,14 @@ from consts import INDEX_NAME
 
 def run_llm(query: str, chat_history: List[Dict[str, Any]] = []):
     # embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-    docsearch = PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
-    # chat_model = ChatOpenAI(verbose=True, temperature=0)
     embeddings = OllamaEmbeddings(model="llama3.1")
     chat_model = ChatOllama(
         model="llama3.1",
         temperature=0,
     )
-
+    docsearch = PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
+    # chat_model = ChatOpenAI(verbose=True, temperature=0)
+    
     rephrase_prompt = hub.pull("langchain-ai/chat-langchain-rephrase")
 
     retrieval_qa_chat_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
@@ -52,14 +52,14 @@ def format_docs(docs):
 
 def run_llm2(query: str, chat_history: List[Dict[str, Any]] = []):
     # embeddings = OpenAIEmbeddings()
-    docsearch = PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
-    # chat_model = ChatOpenAI(model_name="gpt-4o", verbose=True, temperature=0)
     embeddings = OllamaEmbeddings(model="llama3.1")
     chat_model = ChatOllama(
         model="llama3.1",
         temperature=0,
     )
-
+    docsearch = PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
+    # chat_model = ChatOpenAI(model_name="gpt-4o", verbose=True, temperature=0)
+    
     #rephrase_prompt = hub.pull("langchain-ai/chat-langchain-rephrase")
 
     retrieval_qa_chat_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
