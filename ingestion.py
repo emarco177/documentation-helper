@@ -66,9 +66,16 @@ def ingest_docs2() -> None:
         )
         docs = loader.load()
 
-        print(f"Going to add {len(docs)} documents to Pinecone")
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
+        documents = text_splitter.split_documents(docs)
+
+        for doc in documents:
+            doc_url = doc.metadata.pop('sourceURL')
+            doc.metadata = {'source': doc_url}
+
+        print(f"Going to add {len(documents)} documents to Pinecone")
         PineconeVectorStore.from_documents(
-            docs, embeddings, index_name="firecrawl-index"
+            documents, embeddings, index_name="firecrawl-index"
         )
         print(f"****Loading {url}* to vectorstore done ***")
 
