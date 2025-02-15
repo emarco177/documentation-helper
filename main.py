@@ -2,7 +2,6 @@ from typing import Set
 
 from backend.core import run_llm
 import streamlit as st
-from streamlit_chat import message
 
 st.header("LangChain Udemy Course- Documentation Helper Bot")
 
