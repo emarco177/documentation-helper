@@ -1,11 +1,10 @@
 from typing import Set
 
 from backend.core import run_llm
+
 import streamlit as st
-from streamlit_chat import message
 
-st.header("LangChain Udemy Course- Documentation Helper Bot")
-
+st.header("LangChain Udemy Course - Documentation Helper Bot")
 
 prompt = st.text_input("Prompt", placeholder="Enter your prompt here..")
 
@@ -23,7 +22,7 @@ def create_sources_string(source_urls: Set[str]) -> str:
     sources_list.sort()
     sources_string = "sources:\n"
     for i, source in enumerate(sources_list):
-        sources_string += f"{i+1}. {source}\n"
+        sources_string += f"- {source}\n"
     return sources_string
 
 
@@ -46,5 +45,5 @@ if st.session_state["chat_answers_history"]:
         st.session_state["chat_answers_history"],
         st.session_state["user_prompt_history"],
     ):
-        message(user_query, is_user=True)
-        message(generated_response)
+        st.chat_message("user").write(user_query)
+        st.chat_message("assistant").write(generated_response)
