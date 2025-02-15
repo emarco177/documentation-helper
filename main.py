@@ -2,7 +2,6 @@ from typing import Set
 
 from backend.core import run_llm
 import streamlit as st
-from streamlit_chat import message
 
 st.header("LangChain Udemy Course- Documentation Helper Bot")
 
@@ -46,5 +45,5 @@ if st.session_state["chat_answers_history"]:
         st.session_state["chat_answers_history"],
         st.session_state["user_prompt_history"],
     ):
-        message(user_query, is_user=True)
-        message(generated_response)
+        st.chat_message("user").write(user_query)
+        st.chat_message("assistant").write(generated_response)
