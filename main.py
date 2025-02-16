@@ -124,8 +124,9 @@ if st.session_state["chat_answers_history"]:
         st.session_state["chat_answers_history"],
         st.session_state["user_prompt_history"],
     ):
-        message(user_query, is_user=True, key=f"user_{user_query}")
-        message(generated_response, key=f"bot_{generated_response}")
+        st.chat_message("user").write(user_query)
+        st.chat_message("assistant").write(generated_response)
+
 
 # Add a footer
 st.markdown("---")
