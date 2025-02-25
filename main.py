@@ -6,7 +6,7 @@ from typing import Set
 import streamlit as st
 from streamlit_chat import message
 
-from backend.core import run_llm
+from backend.core import run_llm, run_llm2
 
 st.set_page_config(
     page_title="Your App Title",
@@ -84,7 +84,7 @@ with st.sidebar:
     st.write(f"**Name:** {user_name}")
     st.write(f"**Email:** {user_email}")
 
-st.header("LangChain🦜🔗 Udemy Course- Helper Bot")
+st.header("Solo Leveling Trivia - Helper Bot")
 
 # Initialize session state
 if "chat_answers_history" not in st.session_state:
@@ -104,11 +104,11 @@ with col2:
 
 if prompt:
     with st.spinner("Generating response..."):
-        generated_response = run_llm(
+        generated_response = run_llm2(
             query=prompt, chat_history=st.session_state["chat_history"]
         )
 
-        sources = set(doc.metadata["source"] for doc in generated_response["context"])
+        sources = set(doc.metadata["source"] for doc in generated_response["output_context"])
         formatted_response = (
             f"{generated_response['answer']} \n\n {create_sources_string(sources)}"
         )

@@ -55,8 +55,9 @@ def ingest_docs2() -> None:
     ]
 
     langchain_documents_base_urls2 = [
-        "https://python.langchain.com/docs/integrations/chat/",
-        "https://python.langchain.com/docs/integrations/text_embedding/",
+        "https://solo-leveling.fandom.com/wiki/Sung_Jinwoo",
+        "https://solo-leveling.fandom.com/wiki/Cha_Hae-In",
+        "https://solo-leveling.fandom.com/wiki/Ant_King",
     ]
     for url in langchain_documents_base_urls2:
         print(f"FireCrawling {url=}")

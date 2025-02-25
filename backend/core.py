@@ -78,7 +78,7 @@ def run_llm2(query: str, chat_history: List[Dict[str, Any]] = []):
 
     #This is to add fields to the output (using the assign method)
     qa = RunnablePassthrough.assign(
-        context=retrieve_docs_chain
+        output_context=retrieve_docs_chain
     ).assign(
         answer=rag_chain
     )
