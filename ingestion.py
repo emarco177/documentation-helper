@@ -66,7 +66,7 @@ def ingest_docs2() -> None:
 
         print(f"Going to add {len(docs)} documents to Pinecone")
         PineconeVectorStore.from_documents(
-            docs, embeddings, index_name="firecrawl-index"
+            docs, embeddings, index_name="langchain-101"
         )
         print(f"****Loading {url}* to vectorstore done ***")
 

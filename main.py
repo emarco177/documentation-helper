@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv('../.env')
 from typing import Set
 
 import streamlit as st
@@ -76,8 +76,8 @@ with st.sidebar:
     st.title("User Profile")
 
     # You can replace these with actual user data
-    user_name = "John Doe"
-    user_email = "john.doe@example.com"
+    user_name = "Felipe Schreiber Fernandes"
+    user_email = "schreiber.felipe@gmail.com"
 
     profile_pic = get_profile_picture(user_email)
     st.image(profile_pic, width=150)
@@ -108,7 +108,7 @@ if prompt:
             query=prompt, chat_history=st.session_state["chat_history"]
         )
 
-        sources = set(doc.metadata["source"] for doc in generated_response["context"])
+        sources = set(doc.metadata['sourceURL'] for doc in generated_response["context"])
         formatted_response = (
             f"{generated_response['answer']} \n\n {create_sources_string(sources)}"
         )
