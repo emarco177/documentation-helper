@@ -21,8 +21,11 @@ langchainhub = "*"
 firecrawl-py = "*"
 langchain-community = "*"
 langsmith = "*"
-pinecone = "*"
 pillow = "*"
+langchain-tavily = "*"
+langchain-pinecone = "*"
+certifi = "*"
+langchain-chroma = "*"
 
 [dev-packages]
 

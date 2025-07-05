@@ -4,7 +4,6 @@ load_dotenv()
 from typing import Set
 
 import streamlit as st
-from streamlit_chat import message
 
 from backend.core import run_llm
 
@@ -14,10 +13,11 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+from io import BytesIO
+
+import requests
 # Add these imports
 from PIL import Image
-import requests
-from io import BytesIO
 
 
 def create_sources_string(source_urls: Set[str]) -> str:
