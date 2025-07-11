@@ -26,6 +26,7 @@ langchain-tavily = "*"
 langchain-pinecone = "*"
 certifi = "*"
 langchain-chroma = "*"
+python-dotenv = "*"
 
 [dev-packages]
 ipykernel = "*"
