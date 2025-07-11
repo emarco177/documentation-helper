@@ -12,8 +12,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_tavily import TavilyCrawl, TavilyExtract, TavilyMap
 
-from logger import (Colors, log_error, log_header, log_info, log_success,
-                    log_warning)
+from logger import Colors, log_error, log_header, log_info, log_success, log_warning
 
 load_dotenv()
 
@@ -50,15 +49,21 @@ async def extract_batch(urls: List[str], batch_num: int) -> List[Dict[str, Any]]
     """Extract documents from a batch of URLs."""
     try:
         log_info(
-            f"🔄 TavilyExtract: Processing batch {batch_num} with {len(urls)} URLs",
+            f"🔄 TavilyExtract: Processing batch {batch_num} with {len(urls)} URLs.",
             Colors.BLUE,
         )
         docs = await tavily_extract.ainvoke(
             input={"urls": urls, "extract_depth": "advanced"}
         )
-        log_success(
-            f"TavilyExtract: Completed batch {batch_num} - extracted {len(docs.get('results', []))} documents"
-        )
+        extracted_docs_count = len(docs.get("results", []))
+        if extracted_docs_count > 0:
+            log_success(
+                f"TavilyExtract: Completed batch {batch_num} - extracted {extracted_docs_count} documents"
+            )
+        else:
+            log_error(
+                f"TavilyExtract: Batch {batch_num} failed to extract any documents, {docs}"
+            )
         return docs
     except Exception as e:
         log_error(f"TavilyExtract: Failed to extract batch {batch_num} - {e}")
@@ -160,7 +165,7 @@ async def main():
     )
 
     # Split URLs into batches of 20
-    url_batches = chunk_urls(list(site_map["results"]), chunk_size=50)
+    url_batches = chunk_urls(list(site_map["results"]), chunk_size=20)
     log_info(
         f"📋 URL Processing: Split {len(site_map['results'])} URLs into {len(url_batches)} batches",
         Colors.BLUE,
