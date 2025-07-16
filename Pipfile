@@ -22,11 +22,11 @@ firecrawl-py = "*"
 langchain-community = "*"
 langsmith = "*"
 pillow = "*"
-langchain-tavily = "*"
 langchain-pinecone = "*"
 certifi = "*"
 langchain-chroma = "*"
 python-dotenv = "*"
+langchain-tavily = "*"
 
 [dev-packages]
 ipykernel = "*"
