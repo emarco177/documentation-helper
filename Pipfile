@@ -4,27 +4,36 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-langchain = "*"
 beautifulsoup4 = "*"
 black = "*"
 tiktoken = "*"
 openai = "*"
-pinecone-client = "*"
 unstructured = "*"
 nltk = "*"
 fastapi = "*"
 jinja2 = "*"
 uvicorn = "*"
 streamlit = "*"
+streamlit-chat = "*"
 tqdm = "*"
-langchain-pinecone = "*"
-langchain-openai = "*"
-langchain-community = "*"
 isort = "*"
 langchainhub = "*"
+firecrawl-py = "*"
+langchain-community = "*"
+langsmith = "*"
+pillow = "*"
+langchain-pinecone = "*"
+certifi = "*"
+langchain-chroma = "*"
+python-dotenv = "*"
+langchain-tavily = "*"
 
 [dev-packages]
+ipykernel = "*"
 
 [requires]
 python_version = "3.11"
 python_full_version = "3.11.0"
+
+[pipenv]
+allow_prereleases = true
