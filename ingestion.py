@@ -5,8 +5,8 @@ from typing import Any, Dict, List
 
 import certifi
 from dotenv import load_dotenv
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
@@ -36,6 +36,7 @@ vectorstore = Chroma(persist_directory="chroma_db", embedding_function=embedding
 tavily_extract = TavilyExtract()
 tavily_map = TavilyMap(max_depth=5, max_breadth=20, max_pages=1000)
 tavily_crawl = TavilyCrawl()
+
 
 async def index_documents_async(documents: List[Document], batch_size: int = 50):
     """Process documents in batches asynchronously."""
@@ -92,13 +93,27 @@ async def main():
         Colors.PURPLE,
     )
     # Crawl the documentation site
-    
-    res = tavily_crawl.invoke({
-        "url": "https://python.langchain.com/",
-        "max_depth": 2,
-        "extract_depth": "advanced"
-    })
-    all_docs = res["results"]
+
+    res = tavily_crawl.invoke(
+        {
+            "url": "https://python.langchain.com/",
+            "max_depth": 2,
+            "extract_depth": "advanced",
+        }
+    )
+
+    # Convert Tavily crawl results to LangChain Document objects
+    all_docs = []
+    for tavily_crawl_result_item in res["results"]:
+        log_info(
+            f"TavilyCrawl: Successfully crawled {tavily_crawl_result_item['url']} from documentation site"
+        )
+        all_docs.append(
+            Document(
+                page_content=tavily_crawl_result_item["raw_content"],
+                metadata={"source": tavily_crawl_result_item["url"]},
+            )
+        )
 
     # Split documents into chunks
     log_header("DOCUMENT CHUNKING PHASE")

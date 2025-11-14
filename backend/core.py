@@ -4,11 +4,12 @@ load_dotenv()
 from typing import Any, Dict, List
 
 from langchain import hub
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains.history_aware_retriever import \
-    create_history_aware_retriever
-from langchain.chains.retrieval import create_retrieval_chain
 from langchain_chroma import Chroma
+from langchain_classic.chains.combine_documents import \
+    create_stuff_documents_chain
+from langchain_classic.chains.history_aware_retriever import \
+    create_history_aware_retriever
+from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
