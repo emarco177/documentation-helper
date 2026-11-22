@@ -19,15 +19,18 @@ tqdm = "*"
 isort = "*"
 langchainhub = "*"
 firecrawl-py = "*"
+langchain = "*"
+langchain-classic = "*"
 langchain-community = "*"
+langchain-openai = "*"
 langsmith = "*"
 pillow = "*"
-langchain-pinecone = "*"
 certifi = "*"
 langchain-chroma = "*"
 python-dotenv = "*"
+requests = "*"
 langchain-tavily = "*"
-langchain-text-splitters = "*"
+langchain-pinecone = "*"
 
 [dev-packages]
 ipykernel = "*"
@@ -37,4 +40,4 @@ python_version = "3.11"
 python_full_version = "3.11.0"
 
 [pipenv]
-allow_prereleases = true
+allow_prereleases = false

@@ -1,18 +1,21 @@
 import asyncio
 import os
+import re
 import ssl
 from typing import Any, Dict, List
 
 import certifi
+import requests
 from dotenv import load_dotenv
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_tavily import TavilyCrawl, TavilyExtract, TavilyMap
 
-from logger import Colors, log_error, log_header, log_info, log_success, log_warning
+from logger import (Colors, log_error, log_header, log_info, log_success,
+                    log_warning)
 
 load_dotenv()
 
@@ -28,81 +31,64 @@ embeddings = OpenAIEmbeddings(
     chunk_size=50,
     retry_min_seconds=10,
 )
-chroma = Chroma(persist_directory="chroma_db", embedding_function=embeddings)
+# vectorstore = Chroma(persist_directory="chroma_db", embedding_function=embeddings)
 vectorstore = PineconeVectorStore(
-    index_name="langchain-docs-2026", embedding=embeddings
+    index_name="langchain-docs", embedding=embeddings
 )
 tavily_extract = TavilyExtract()
 tavily_map = TavilyMap(max_depth=5, max_breadth=20, max_pages=1000)
+tavily_crawl = TavilyCrawl()
+
+LLMS_TXT = "https://docs.langchain.com/llms.txt"
+
+
+def get_documentation_urls() -> List[str]:
+    """Find every LangChain Python docs page through the site's llms.txt."""
+    llms_txt = requests.get(LLMS_TXT, timeout=30).text
+    python_line = next(line for line in llms_txt.splitlines() if "Build / Python" in line)
+    python_index = re.search(r"\((https://\S+?\.txt)\)", python_line).group(1)
+    index = requests.get(python_index, timeout=30).text
+    urls = re.findall(r"\((https://docs\.langchain\.com/\S+?\.md)\)", index)
+    return [url for url in urls if "/oss/python/" in url]
 
 
 def chunk_urls(urls: List[str], chunk_size: int = 20) -> List[List[str]]:
-    """Split URLs into chunks of specified size."""
-    chunks = []
-    for i in range(0, len(urls), chunk_size):
-        chunk = urls[i : i + chunk_size]
-        chunks.append(chunk)
-    return chunks
+    """Split the URLs into batches for TavilyExtract."""
+    return [urls[i : i + chunk_size] for i in range(0, len(urls), chunk_size)]
 
 
 async def extract_batch(urls: List[str], batch_num: int) -> List[Dict[str, Any]]:
-    """Extract documents from a batch of URLs."""
-    try:
-        log_info(
-            f"🔄 TavilyExtract: Processing batch {batch_num} with {len(urls)} URLs.",
-            Colors.BLUE,
-        )
-        docs = await tavily_extract.ainvoke(
-            input={"urls": urls, "extract_depth": "advanced"}
-        )
-        extracted_docs_count = len(docs.get("results", []))
-        if extracted_docs_count > 0:
-            log_success(
-                f"TavilyExtract: Completed batch {batch_num} - extracted {extracted_docs_count} documents"
-            )
-        else:
-            log_error(
-                f"TavilyExtract: Batch {batch_num} failed to extract any documents, {docs}"
-            )
-        return docs
-    except Exception as e:
-        log_error(f"TavilyExtract: Failed to extract batch {batch_num} - {e}")
-        return []
+    """Extract one batch of URLs with TavilyExtract."""
+    log_info(f"🔄 TavilyExtract: Processing batch {batch_num} with {len(urls)} URLs")
+    response = await tavily_extract.ainvoke(input={"urls": urls})
+    results = response.get("results", [])
+    log_success(f"TavilyExtract: Completed batch {batch_num} - {len(results)} pages")
+    return results
 
 
-async def async_extract(url_batches: List[List[str]]):
+async def async_extract(url_batches: List[List[str]]) -> List[Document]:
+    """Extract all batches concurrently and turn each page into a LangChain Document."""
     log_header("DOCUMENT EXTRACTION PHASE")
-    log_info(
-        f"🔧 TavilyExtract: Starting concurrent extraction of {len(url_batches)} batches",
-        Colors.DARKCYAN,
-    )
-
     tasks = [extract_batch(batch, i + 1) for i, batch in enumerate(url_batches)]
-
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    # Filter out exceptions and flatten results
-    all_pages = []
-    failed_batches = 0
-    for result in results:
-        if isinstance(result, Exception):
-            log_error(f"TavilyExtract: Batch failed with exception - {result}")
-            failed_batches += 1
-        else:
-            for extracted_page in result["results"]:  # type: ignore
-                document = Document(
-                    page_content=extracted_page["raw_content"],
-                    metadata={"source": extracted_page["url"]},
+    all_docs = []
+    for batch_num, batch_results in enumerate(results, start=1):
+        if isinstance(batch_results, Exception):
+            log_error(f"TavilyExtract: Batch {batch_num} failed - {batch_results}")
+            continue
+        for result in batch_results:
+            if not result.get("raw_content"):
+                log_warning(f"TavilyExtract: Skipping {result.get('url')} - no content")
+                continue
+            all_docs.append(
+                Document(
+                    page_content=result["raw_content"],
+                    metadata={"source": result["url"]},
                 )
-                all_pages.append(document)
-
-    log_success(
-        f"TavilyExtract: Extraction complete! Total pages extracted: {len(all_pages)}"
-    )
-    if failed_batches > 0:
-        log_warning(f"TavilyExtract: {failed_batches} batches failed during extraction")
-
-    return all_pages
+            )
+    log_success(f"TavilyExtract: Extracted {len(all_docs)} documents")
+    return all_docs
 
 
 async def index_documents_async(documents: List[Document], batch_size: int = 50):
@@ -125,7 +111,7 @@ async def index_documents_async(documents: List[Document], batch_size: int = 50)
     # Process all batches concurrently
     async def add_batch(batch: List[Document], batch_num: int):
         try:
-            await vectorstore.aadd_documents(batch)
+            await asyncio.to_thread(vectorstore.add_documents, batch)
             log_success(
                 f"VectorStore Indexing: Successfully added batch {batch_num}/{len(batches)} ({len(batch)} documents)"
             )
@@ -155,23 +141,11 @@ async def main():
     """Main async function to orchestrate the entire process."""
     log_header("DOCUMENTATION INGESTION PIPELINE")
 
-    log_info(
-        "🗺️  TavilyMap: Starting to map documentation structure from https://python.langchain.com/",
-        Colors.PURPLE,
-    )
-    site_map = tavily_map.invoke("https://python.langchain.com/")
-    log_success(
-        f"TavilyMap: Successfully mapped {len(site_map['results'])} URLs from documentation site"
-    )
+    log_info(f"📄 llms.txt: Reading the documentation index from {LLMS_TXT}", Colors.PURPLE)
+    urls = get_documentation_urls()
+    log_success(f"llms.txt: Found {len(urls)} documentation pages")
 
-    # Split URLs into batches of 20
-    url_batches = chunk_urls(list(site_map["results"]), chunk_size=20)
-    log_info(
-        f"📋 URL Processing: Split {len(site_map['results'])} URLs into {len(url_batches)} batches",
-        Colors.BLUE,
-    )
-
-    # Extract documents from URLs
+    url_batches = chunk_urls(urls, chunk_size=20)
     all_docs = await async_extract(url_batches)
 
     # Split documents into chunks
@@ -192,7 +166,7 @@ async def main():
     log_header("PIPELINE COMPLETE")
     log_success("🎉 Documentation ingestion pipeline finished successfully!")
     log_info("📊 Summary:", Colors.BOLD)
-    log_info(f"   • URLs mapped: {len(site_map['results'])}")
+    log_info(f"   • URLs found: {len(urls)}")
     log_info(f"   • Documents extracted: {len(all_docs)}")
     log_info(f"   • Chunks created: {len(splitted_docs)}")
 
