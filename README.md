@@ -12,7 +12,7 @@
 
 <br>
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![LangChain](https://img.shields.io/badge/LangChain-🦜🔗-green.svg)](https://langchain.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B.svg)](https://streamlit.io/)
 [![Pinecone](https://img.shields.io/badge/Pinecone-🌲-orange.svg)](https://pinecone.io/)
@@ -67,7 +67,7 @@ The **LangChain Documentation Helper** is a sophisticated AI-powered web applica
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- [uv](https://docs.astral.sh/uv/) (it installs Python 3.13 for you)
 - OpenAI API key
 - Pinecone API key
 - [Tavily API key](https://app.tavily.com/home?utm_campaign=eden_marco&utm_medium=socials&utm_source=linkedin) (required - for documentation crawling and web search)
@@ -86,33 +86,25 @@ The **LangChain Documentation Helper** is a sophisticated AI-powered web applica
    ```env
    PINECONE_API_KEY=your_pinecone_api_key_here
    OPENAI_API_KEY=your_openai_api_key_here
-   TAVILY_API_KEY=your_tavily_api_key_here  # Required - for documentation crawling
+   TAVILY_API_KEY=your_tavily_api_key_here  # Required - for extracting the documentation
    ```
 
 3. **Install dependencies**
    ```bash
-   pipenv install
+   uv sync
    ```
 
 4. **Ingest LangChain Documentation** (Run the ingestion pipeline)
    ```bash
-   python ingestion.py  # Uses Tavily to crawl and index documentation
+   uv run ingestion.py  # Reads the docs' llms.txt, extracts every page with Tavily and indexes it
    ```
 
 5. **Run the application**
    ```bash
-   streamlit run main.py
+   uv run streamlit run main.py
    ```
 
 6. **Open your browser** and navigate to `http://localhost:8501`
-
-## 🧪 Testing
-
-Run the test suite to ensure everything is working correctly:
-
-```bash
-pipenv run pytest .
-```
 
 ## 📁 Project Structure
 
@@ -134,7 +126,7 @@ documentation-helper/
 ├── logger.py                         # Logging utilities
 ├── Tavily Demo Tutorial.ipynb        # 📚 Tutorial: Introduction to Tavily API
 ├── Tavily Crawl Demo Tutorial.ipynb  # 📚 Tutorial: Advanced Tavily crawling techniques
-└── requirements files                # Pipfile, Pipfile.lock
+└── pyproject.toml, uv.lock           # Dependencies (uv)
 ```
 
 ### 📚 Tutorial Notebooks
